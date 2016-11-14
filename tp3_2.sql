@@ -27,5 +27,54 @@ commit;
 
 INSERT INTO Hotels (NumHo, NomHo, RueAdrHo, VilleHo, NbEtoilesHo)
 VALUES
-  (4, 'barbecue', 'rue de la trompette', 'Marseille', 4);
+  (5, 'barbecue', 'rue de la trompette', 'Marseille', 4);
 commit;
+
+--5.Mise en évidence du phénomène des mises à jour perdues
+
+set transaction isolation level serializable;
+declare Nb Integer;
+begin
+  select nbetoilesho into Nb from hotels where numho = 1;
+  update hotels set nbetoilesho = Nb + 1 where numho = 1;
+end;
+/
+
+-- 6 - retour sur le phénomène fantomes
+commit;
+
+set transaction isolation level serializable;
+update Hotels set NbEtoilesHo = 1 where NbEtoilesHo = 3;
+commit;
+
+
+-- 8.Mise en evidence de la gestion de la concurence au niveau des instructions sql
+commit;
+
+SET serveroutput on
+
+update hotels set nbetoilesHO = nbetoilesho - 1
+where numho = 4;
+commit;
+
+--9.Gestion de la concurrence dans une contrainte de clef (primaire ou unique)
+
+INSERT INTO Hotels (NumHo, NomHo, RueAdrHo, VilleHo, NbEtoilesHo)
+VALUES
+  (8, 'Petite bergerie', 'Chemin sainte Augustine', 'Bézié', 5);
+
+select * from hotels;
+
+INSERT INTO Hotels (NumHo, NomHo, RueAdrHo, VilleHo, NbEtoilesHo)
+VALUES
+  (10, 'Petite bergerie', 'Chemin sainte Augustine', 'Bézié', 5);
+
+--10 Gestion de la concurrence dans une contrainte de référence
+
+insert into chambres values
+(4, 0, 5);
+
+insert into chambres values
+(4, 1, 4);
+
+select * from TYPESCHAMBRE;
